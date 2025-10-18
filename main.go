@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"math/rand"
 	"sync"
 	"time"
@@ -36,7 +35,7 @@ func maximum(data []int) int {
 		return 0
 	}
 
-	maxValue := math.MinInt
+	maxValue := data[0]
 
 	for _, value := range data {
 		if value > maxValue {
@@ -71,20 +70,11 @@ func maxChunks(data []int) int {
 			endIdx = len(data)
 		}
 
-		go func(idx, start, end int) {
+		go func(idx int, slice []int) {
 			defer wg.Done()
+			maxInChunkList[idx] = maximum(slice)
 
-			chunkMax := data[start]
-
-			for j := start + 1; j < end; j++ {
-				if data[j] > chunkMax {
-					chunkMax = data[j]
-				}
-			}
-
-			maxInChunkList[idx] = chunkMax
-
-		}(i, startIdx, endIdx)
+		}(i, data[startIdx:endIdx])
 	}
 
 	wg.Wait()
